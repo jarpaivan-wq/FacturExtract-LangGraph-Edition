@@ -1,0 +1,58 @@
+%% FacturExtract v2: flujo vigente (revisión 2026-10-12: estado de pago decidido por el usuario y ventana del lote)
+flowchart TD
+  subgraph RES["APLICACION RESIDENTE: inicia con Windows, icono en la bandeja, una sola instancia"]
+    subgraph G1["GRAFO 1: EXTRACCION, un run por factura, hilo = id de factura"]
+      A["Usuario elige fotos, agrupa 2 si es una sola factura y pulsa PROCESAR"] --> R["registrar: copia imagenes a la carpeta de datos y crea la fila (registrada)"]
+      R --> CI["cargar_imagen: comprueba el archivo en disco; la imagen nunca viaja en el estado"]
+      CI --> EX["extraer: MODELO con vision, salida estructurada, sin herramientas; sugiere pago_sugerido; en un reintento recibe los hallazgos"]
+      EX --> V["SUBGRAFO VALIDACION, solo codigo: V01 a V10 (V09 retirada)"]
+      V --> VER{"Veredicto"}
+      VER -- duplicada --> DUP["marcar_duplicada: no se guarda nada"]
+      VER -- "con hallazgos bloqueantes" --> RET{"Quedan reintentos? tope 2"}
+      RET -- Si --> EX
+      RET -- No --> PR["preparar_revision: borrador en_revision"]
+      PR --> RH["PAUSA revision_humana (interrupt): aprobar tal cual, corregir o rechazar"]
+      RH --> VD["validar_decision_humana: si es invalida vuelve a preguntar"]
+      VD -- Corregir --> V
+      VD -- Rechazar --> RZ["marcar_rechazada"]
+      VER -- "sin hallazgos bloqueantes" --> PC
+      VD -- "Aprobar tal cual (no revalida)" --> PC["preparar_confirmacion: borrador por_confirmar (aun no se guarda nada)"]
+      PC --> CP["PAUSA configurar_pago (interrupt): estado de pago, N documento, fecha de alerta"]
+      CP --> VC["validar_configuracion: cheque exige N documento; alerta no anterior a hoy; pendiente exige vencimiento; si falla vuelve a preguntar"]
+      VC -- Rechazar --> RZ
+      VC -- Confirmar --> G["guardar: UNA transaccion con factura, lineas, pago y seguimiento si queda pendiente (sin importar el mes de emision)"]
+      G -- "duplicado (restriccion unica)" --> DUP
+      G --> XL["regenerar_excel del mes de emision, idempotente"]
+    end
+    LOTE["VENTANA DEL LOTE: una sola tabla con todas las pausas; Confirmar todas (solo filas sin hallazgos) o fila a fila; filas con hallazgos en rojo con foto y campos editables"]
+    RH -. "se muestra en" .-> LOTE
+    CP -. "se muestra en" .-> LOTE
+    LOTE -. "decision del usuario, reanuda" .-> VD
+    LOTE -. "decision del usuario, reanuda" .-> VC
+
+    PLAN["PLANIFICADOR, es codigo y no un grafo: cada 15 min desde la hora configurada busca seguimientos pendientes con proxima alerta menor o igual a hoy y lanza un run por cada uno"]
+    subgraph G2["GRAFO 2: ATENCION DE UN VENCIMIENTO, hilo = alerta + id + fecha"]
+      PA["preparar_alerta: marca esperando decision"] --> AH["PAUSA atencion_humana (interrupt)"]
+      AH --> VDV["validar_decision: posponer exige fecha posterior a hoy; pagada exige metodo y, si es cheque, N documento; si es invalida vuelve a preguntar"]
+      VDV -- Posponer --> PO["posponer: solo mueve la proxima alerta; el vencimiento real no cambia"]
+      VDV -- Cerrar --> CE["cerrar: proxima alerta = manana"]
+      VDV -- "Pagada (contado, transferencia o cheque)" --> RP["registrar_pago en una transaccion"]
+      RP --> XL2["regenerar_excel"]
+    end
+    VENT["Ventana VENCIMIENTOS DEL DIA: lista con Posponer, Pagada y Cerrar; se abre sola la primera vez del dia con pendientes"]
+    AH -. "se muestra en" .-> VENT
+    VENT -. "decision del usuario, reanuda" .-> VDV
+    VISTA["Vista de facturas: marcar pagada sin esperar la alerta (mismo registro de pago)"] --> RP
+    PLAN --> PA
+    INI["AL INICIAR O DESPERTAR EL PC: 1 retomar pausas pendientes, 2 reiniciar extracciones interrumpidas, 3 reintentar Excel desactualizados"]
+  end
+  FDB[("facturas.db: fuente de verdad. estado de pago, metodo de pago, N documento, fecha de pago, vencimiento original; proxima alerta en seguimientos")]
+  CKP[("checkpoints.db: estado de LangGraph y pausas, desechable")]
+  XLS[("Excel por mes de emision, solo lectura, carpeta Facturas")]
+  G --> FDB
+  RP --> FDB
+  XL --> XLS
+  XL2 --> XLS
+  G1 --> CKP
+  G2 --> CKP
+  PLAN --> FDB

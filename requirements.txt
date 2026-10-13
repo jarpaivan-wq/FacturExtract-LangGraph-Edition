@@ -1,0 +1,9 @@
+langgraph==1.2.15
+langgraph-checkpoint-sqlite==3.1.2
+anthropic==1.13.0
+openpyxl==3.1.5
+truststore==0.10.5
+pystray==0.19.5
+pillow==12.3.0
+python-dotenv==1.2.4
+httpx==0.28.1

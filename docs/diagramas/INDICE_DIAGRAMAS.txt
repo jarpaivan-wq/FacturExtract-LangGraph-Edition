@@ -1,0 +1,19 @@
+DIAGRAMAS DE FACTUREXTRACT V2
+Generados desde los grafos compilados reales de LangGraph (no dibujados a mano).
+Cada diagrama tiene su imagen (.png) y su texto Mermaid (.mermaid, para pegar en el README).
+
+1_extraccion_vista_general_subgrafos_colapsados.png / .mermaid
+   Grafo 1, extracción de facturas, vista general. El subgrafo de validación aparece como un solo nodo («validar»).
+
+2_extraccion_subgrafos_expandidos.png / .mermaid
+   Grafo 1, extracción de facturas, con el subgrafo de validación expandido: presencia, fechas, montos,
+   advertencias, duplicado y veredicto, con las reglas V01 a V11 de cada nodo.
+
+3_atencion_vencimientos.png / .mermaid
+   Grafo 2, atención de vencimientos (alertas de facturas pendientes). No tiene subgrafos.
+
+4_subgrafo_validacion_reglas_V01_a_V11.png / .mermaid
+   El subgrafo de validación por separado, con cada regla en su nodo. Es el único subgrafo del proyecto.
+   V09 está retirada (el estado de pago lo decide el usuario) y por eso no aparece.
+
+Nota: si cambian los nodos de los grafos o las reglas, hay que volver a generar estos archivos.

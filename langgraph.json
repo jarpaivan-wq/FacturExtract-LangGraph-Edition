@@ -1,0 +1,9 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "extraccion_facturas": "./studio/grafos.py:extraccion_facturas",
+    "atencion_vencimientos": "./studio/grafos.py:atencion_vencimientos"
+  },
+  "env": ".env",
+  "python_version": "3.13"
+}

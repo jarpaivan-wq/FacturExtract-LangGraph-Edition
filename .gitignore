@@ -1,0 +1,49 @@
+# Secretos y configuración local (el .env real nunca se versiona; sí .env.example)
+.env
+.env.*
+!.env.example
+
+# Entornos virtuales
+.venv/
+.venv*/
+venv/
+env/
+
+# Datos de la aplicación: base, checkpoints, imágenes de facturas, Excel generados, logs, bloqueo de instancia
+datos/
+FacturExtract_datos/
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.xlsx
+*.log
+logs/
+instancia.lock
+instancia.mostrar
+
+# Caché y temporales
+__pycache__/
+*.pyc
+.pytest_cache/
+.langgraph_api/
+evaluacion/salida/
+tmp/
+temp/
+
+# Específicos de la máquina / editor
+.claude/
+.vscode/
+.idea/
+*.lnk
+Thumbs.db
+desktop.ini
+
+# Imágenes: fuera por defecto (fotos de facturas); solo se versionan las de documentación
+*.jpg
+*.jpeg
+*.png
+!docs/**/*.png
+
+# Notas de diseño privadas
+documentos de diseño/

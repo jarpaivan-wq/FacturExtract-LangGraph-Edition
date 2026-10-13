@@ -1,0 +1,2 @@
+pytest==9.1.1
+langgraph-cli[inmem]==0.4.33   # solo para Studio (langgraph dev); no va en requirements.txt

@@ -1,0 +1,24 @@
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	presencia(presencia<br/>V01 datos obligatorios presentes<br/>V02 RUT válido)
+	fechas(fechas<br/>V03 fecha de emisión válida y no futura<br/>V04 vencimiento no anterior a la emisión)
+	montos(montos<br/>V05 neto + exento + IVA + otros = total<br/>V11 impuesto adicional con nombre impreso<br/>V06 IVA cercano al 19%<br/>V07 suma de líneas = neto + exento)
+	advertencias(advertencias<br/>V08 cantidad × precio − descuento = total de línea)
+	duplicado(duplicado<br/>V10 documento no registrado antes)
+	veredicto(veredicto<br/>ok · con hallazgos · duplicada)
+	__end__([<p>__end__</p>]):::last
+	__start__ --> presencia;
+	advertencias --> duplicado;
+	duplicado --> veredicto;
+	fechas --> montos;
+	montos --> advertencias;
+	presencia --> fechas;
+	veredicto --> __end__;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc

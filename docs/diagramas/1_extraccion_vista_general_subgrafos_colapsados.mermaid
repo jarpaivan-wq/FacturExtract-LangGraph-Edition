@@ -1,0 +1,53 @@
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	registrar(registrar)
+	cargar_imagen(cargar_imagen)
+	validar(validar<br/>subgrafo de validación V01–V11)
+	preparar_revision(preparar_revision)
+	revision_humana(revision_humana)
+	preparar_confirmacion(preparar_confirmacion)
+	configurar_pago(configurar_pago)
+	validar_configuracion(validar_configuracion)
+	validar_decision(validar_decision)
+	guardar(guardar)
+	regenerar_excel(regenerar_excel)
+	marcar_duplicada(marcar_duplicada)
+	marcar_rechazada(marcar_rechazada)
+	marcar_error(marcar_error)
+	extraer(extraer)
+	__end__([<p>__end__</p>]):::last
+	__start__ --> registrar;
+	cargar_imagen -.-> extraer;
+	cargar_imagen -.-> marcar_error;
+	configurar_pago --> validar_configuracion;
+	extraer -.-> marcar_error;
+	extraer -.-> validar;
+	guardar -.-> marcar_duplicada;
+	guardar -.-> regenerar_excel;
+	preparar_confirmacion --> configurar_pago;
+	preparar_revision --> revision_humana;
+	registrar --> cargar_imagen;
+	revision_humana --> validar_decision;
+	validar -.-> extraer;
+	validar -.-> marcar_duplicada;
+	validar -.-> preparar_confirmacion;
+	validar -.-> preparar_revision;
+	validar_configuracion -.-> configurar_pago;
+	validar_configuracion -.-> guardar;
+	validar_configuracion -.-> marcar_rechazada;
+	validar_decision -.-> marcar_rechazada;
+	validar_decision -.-> preparar_confirmacion;
+	validar_decision -.-> revision_humana;
+	validar_decision -.-> validar;
+	marcar_duplicada --> __end__;
+	marcar_error --> __end__;
+	marcar_rechazada --> __end__;
+	regenerar_excel --> __end__;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc

@@ -1,0 +1,29 @@
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	preparar_alerta(preparar_alerta)
+	atencion_humana(atencion_humana)
+	validar_decision(validar_decision)
+	posponer(posponer)
+	cerrar(cerrar)
+	registrar_pago(registrar_pago)
+	regenerar_excel(regenerar_excel)
+	__end__([<p>__end__</p>]):::last
+	__start__ --> preparar_alerta;
+	atencion_humana --> validar_decision;
+	preparar_alerta --> atencion_humana;
+	registrar_pago --> regenerar_excel;
+	validar_decision -.-> atencion_humana;
+	validar_decision -.-> cerrar;
+	validar_decision -.-> posponer;
+	validar_decision -.-> registrar_pago;
+	cerrar --> __end__;
+	posponer --> __end__;
+	regenerar_excel --> __end__;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc
